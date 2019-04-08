@@ -9,7 +9,7 @@ physics.
 
 ## Team Members
 
-Fanyu Meng, [fy.meng@berkeley.edu]
+Fanyu Meng [fy.meng@berkeley.edu], Collin Cao [collincao@berkeley.edu], Serena Wu [serena.wu@berkeley.edu]
 
 ## Description
 
@@ -27,13 +27,13 @@ frame by frame. The deliverables will be as follows:
 also the underlying particles;
 - (Potential) a GUI That allow the user to change camera angles and add
 liquid;
-- Speed comparison between using the project 4 skeleton code and using 
+- Speed up the algorithms using a CUDA GPU, then make a speed comparison between using the project 4 skeleton code and using 
 CUDA.
 
 ## Schedule
 
 - Week 1: no schedule, left for project 4;
-- Week 2: implement the physics using project 4 as skeleton;
+- Week 2: implement the physics using project 4 as skeleton, adding additional features based on project 4;
 - Week 3: port to CUDA;
 - Week 4: continue to port to CUDA, potentially implement a GUI and 
 final rendering.
