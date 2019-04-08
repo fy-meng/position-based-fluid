@@ -9,7 +9,9 @@ physics.
 
 ## Team Members
 
-Fanyu Meng [fy.meng@berkeley.edu], Collin Cao [collincao@berkeley.edu], Serena Wu [serena.wu@berkeley.edu]
+- Fanyu Meng, 3032043444, [fy.meng@berkeley.edu]
+- Collin Cao, 3032044900, [collincao@berkeley.edu]
+- Serena Wu, 3032104700, [serena.wu@berkeley.edu]
 
 ## Description
 
