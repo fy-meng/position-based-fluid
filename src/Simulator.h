@@ -19,7 +19,7 @@ public:
 
   void init();
 
-  void loadLiquids(vector<Liquid *> *liquids);
+  void loadLiquids(Liquid *liquid);
   void loadCollisionObjects(vector<CollisionObject *> *objects);
   virtual bool isAlive();
   virtual void drawContents();
@@ -60,7 +60,7 @@ private:
   CGL::Vector3D gravity = CGL::Vector3D(0, -9.8, 0);
   nanogui::Color color = nanogui::Color(1.0f, 1.0f, 1.0f, 1.0f);
 
-  vector<Liquid *> *liquids;
+  Liquid *liquid;
   vector<CollisionObject *> *collision_objects;
 
   // OpenGL attributes

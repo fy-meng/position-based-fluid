@@ -35,9 +35,9 @@ using json = nlohmann::json;
 
 const string SPHERE = "sphere";
 const string PLANE = "plane";
-const string LIQUID = "liquid";
+const string LIQUIDS = "liquids";
 
-const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, LIQUID};
+const unordered_set<string> VALID_KEYS = {SPHERE, PLANE, LIQUIDS};
 
 Simulator *app = nullptr;
 GLFWwindow *window = nullptr;
@@ -160,7 +160,7 @@ void incompleteObjectError(const char *object, const char *attribute) {
   exit(-1);
 }
 
-bool loadObjectsFromFile(string filename, vector<Liquid *> *liquids, vector<CollisionObject *> *objects,
+bool loadObjectsFromFile(string filename, Liquid *liquid, vector<CollisionObject *> *objects,
                          int sphere_num_lat, int sphere_num_lon) {
   // Read JSON from file
   ifstream i(filename);
@@ -175,7 +175,7 @@ bool loadObjectsFromFile(string filename, vector<Liquid *> *liquids, vector<Coll
     string key = it.key();
 
     // Check that object is valid
-    unordered_set<string>::const_iterator query = VALID_KEYS.find(key);
+    auto query = VALID_KEYS.find(key);
     if (query == VALID_KEYS.end()) {
       cout << "Invalid scene object found: " << key << endl;
       exit(-1);
@@ -242,27 +242,29 @@ bool loadObjectsFromFile(string filename, vector<Liquid *> *liquids, vector<Coll
 
       Plane *p = new Plane(point, normal, friction);
       objects->push_back(p);
-    } else if (key == LIQUID) {
-      Vector3D size;
+    } else if (key == LIQUIDS) {
+      Vector3D anchor, size;
       double granularity;
 
-      auto it_size = object.find("size");
-      if (it_size != object.end()) {
-        vector<double> vec_size = *it_size;
-        size = Vector3D(vec_size[0], vec_size[1], vec_size[2]);
-      } else {
-        incompleteObjectError("liquid", "size");
-      }
+      for (auto it_liquid : object) {
+        auto it_size = it_liquid.find("size");
+        if (it_size != it_liquid.end()) {
+          vector<double> vec_size = *it_size;
+          size = Vector3D(vec_size[0], vec_size[1], vec_size[2]);
+        } else {
+          incompleteObjectError("liquid", "size");
+        }
 
-      auto it_granularity = object.find("granularity");
-      if (it_granularity != object.end()) {
-        granularity = *it_granularity;
-      } else {
-        incompleteObjectError("liquid", "granularity");
-      }
+        auto it_anchor = it_liquid.find("anchor");
+        if (it_anchor != it_liquid.end()) {
+          vector<double> vec_anchor = *it_anchor;
+          anchor = Vector3D(vec_anchor[0], vec_anchor[1], vec_anchor[2]);
+        } else {
+          incompleteObjectError("liquid", "anchor");
+        }
 
-      Liquid *liquid = new Liquid(size, granularity);
-      liquids->push_back(liquid);
+        liquid->addLiquid(anchor, size);
+      }
     }
   }
 
@@ -302,7 +304,7 @@ int main(int argc, char **argv) {
   std::string project_root;
   bool found_project_root = find_project_root(search_paths, project_root);
 
-  vector<Liquid *> liquids;
+  Liquid *liquid = new Liquid();
   vector<CollisionObject *> objects;
 
   int c;
@@ -366,7 +368,7 @@ int main(int argc, char **argv) {
     file_to_load_from = def_fname.str();
   }
 
-  bool success = loadObjectsFromFile(file_to_load_from, &liquids, &objects, sphere_num_lat, sphere_num_lon);
+  bool success = loadObjectsFromFile(file_to_load_from, liquid, &objects, sphere_num_lat, sphere_num_lon);
   if (!success) {
     std::cout << "Warn: Unable to load from file: " << file_to_load_from << std::endl;
   }
@@ -376,7 +378,7 @@ int main(int argc, char **argv) {
   createGLContexts();
 
   app = new Simulator(project_root, screen);
-  app->loadLiquids(&liquids);
+  app->loadLiquids(liquid);
   app->loadCollisionObjects(&objects);
   app->init();
 

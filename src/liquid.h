@@ -23,7 +23,8 @@ using namespace std;
 struct LiquidParameters {
   LiquidParameters() = default;
 
-  LiquidParameters(float particle_mass,
+  LiquidParameters(float granularity,
+                   float particle_mass,
                    float kernel_radius,
                    float rest_density,
                    int density_iter,
@@ -32,7 +33,8 @@ struct LiquidParameters {
                    float delta_q,
                    int pressure_pow,
                    float viscosity)
-          : particle_mass(particle_mass),
+          : granularity(granularity),
+            particle_mass(particle_mass),
             kernel_radius(kernel_radius),
             rest_density(rest_density),
             density_iter(density_iter),
@@ -44,6 +46,7 @@ struct LiquidParameters {
 
   ~LiquidParameters() = default;
 
+  float granularity = 10.0;
   float particle_mass = 1;
   float kernel_radius = 0.1;
   float rest_density = 6378;
@@ -62,7 +65,7 @@ public:
   explicit LiquidParticle(const Vector3D &pos) {
     this->pos = this->prev_pos = pos;
     this->vel = {0, 0, 0};
-    this->m_sphere_mesh = Misc::SphereMesh(10, 10);
+    this->m_sphere_mesh = Misc::SphereMesh(4, 4);
   }
 
   ~LiquidParticle() = default;
@@ -77,15 +80,15 @@ public:
 struct Liquid {
   Liquid() = default;
 
-  explicit Liquid(Vector3D size, float granularity, LiquidParameters params = {});
-
   ~Liquid() = default;
 
-  Vector3D size;
-  float granularity = 100;
+  vector<Vector3D> anchors, sizes;
+  vector<float> granularities;
   LiquidParameters params;
 
   vector<LiquidParticle> particles;
+
+  void addLiquid(Vector3D anchor, Vector3D size, LiquidParameters params = {});
 
   void render(GLShader &shader);
 

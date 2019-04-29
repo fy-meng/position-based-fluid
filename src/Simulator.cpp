@@ -174,11 +174,11 @@ Simulator::~Simulator() {
   glDeleteTextures(1, &m_gl_texture_4);
   glDeleteTextures(1, &m_gl_cubemap_tex);
 
-  if (liquids) delete liquids;
+  if (liquid) delete liquid;
   if (collision_objects) delete collision_objects;
 }
 
-void Simulator::loadLiquids(vector<Liquid *> *liquids) { this->liquids = liquids; }
+void Simulator::loadLiquids(Liquid *liquid) { this->liquid = liquid; }
 
 void Simulator::loadCollisionObjects(vector<CollisionObject *> *objects) { this->collision_objects = objects; }
 
@@ -205,14 +205,15 @@ void Simulator::init() {
   Vector3D avg_pm_position(0, 0, 0);
   double max_liquid_side = 0;
 
-  for (Liquid *liquid : *liquids) {
-    for (LiquidParticle &p : liquid->particles) {
-      avg_pm_position += p.pos / liquid->particles.size();
-    }
+  for (LiquidParticle &p : liquid->particles) {
+    avg_pm_position += p.pos / liquid->particles.size();
+  }
 
-    max_liquid_side = max(max_liquid_side, liquid->size.x);
-    max_liquid_side = max(max_liquid_side, liquid->size.y);
-    max_liquid_side = max(max_liquid_side, liquid->size.z);
+  for (Vector3D &size : liquid->sizes)
+  {
+    max_liquid_side = max(max_liquid_side, size.x);
+    max_liquid_side = max(max_liquid_side, size.y);
+    max_liquid_side = max(max_liquid_side, size.z);
   }
 
   CGL::Vector3D target(avg_pm_position.x, avg_pm_position.y / 2,
@@ -248,8 +249,7 @@ void Simulator::drawContents() {
     vector<Vector3D> external_accelerations = {gravity};
 
     for (int i = 0; i < simulation_steps; i++)
-      for (Liquid *liquid : *liquids)
-        liquid->simulate(frames_per_sec, simulation_steps, external_accelerations, collision_objects);
+      liquid->simulate(frames_per_sec, simulation_steps, external_accelerations, collision_objects);
   }
 
   // Bind the active shader
@@ -272,8 +272,7 @@ void Simulator::drawContents() {
   shader.setUniform("u_model", model);
   shader.setUniform("u_view_projection", viewProjection);
 
-  for (Liquid *liquid : *liquids)
-    liquid->render(shader);
+  liquid->render(shader);
 
   for (CollisionObject *co : *collision_objects)
     co->render(shader);
@@ -419,8 +418,7 @@ bool Simulator::keyCallbackEvent(int key, int scancode, int action,
       break;
     case 'r':
     case 'R':
-      for (Liquid *liquid : *liquids)
-        liquid->reset();
+      liquid->reset();
       break;
     case ' ':
       resetCamera();
