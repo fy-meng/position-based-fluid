@@ -46,12 +46,12 @@ struct LiquidParameters {
 
   ~LiquidParameters() = default;
 
-  float granularity = 20.0;
+  float granularity = 10.0;
   float particle_mass = 1;
   float kernel_radius = 0.2;
-  float rest_density = 200;
+  float rest_density = 350;
   int density_iter = 4;
-  float eps = 60;
+  float eps = 600;
   float s_corr = 0.0001;
   float delta_q = 0.03;
   int pressure_pow = 4;
@@ -104,7 +104,7 @@ struct Liquid {
 
   // smoothing kernel function
   static float W(float r_2, float h);
-  static float Spiky_grad(float r_2, float h);
+  static Vector3D Spiky_grad(const Vector3D &r, float h);
 };
 
 #endif //CLOTHSIM_LIQUID_H

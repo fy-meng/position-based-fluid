@@ -77,7 +77,7 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
     for (LiquidParticle &p : particles) {
       float denom = 0;
       for (LiquidParticle *q : p.neighbors)
-        denom += pow(Spiky_grad((float) (p.pos - q->pos).norm2(), h), 2);
+        denom += Spiky_grad(p.pos - q->pos, h).norm2();
       p.lambda = -(p.density / params.rest_density - 1) / (denom + params.eps);
     }
 
@@ -87,8 +87,8 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
     for (LiquidParticle &p : particles) {
       p.delta_pos = {0, 0, 0};
       for (LiquidParticle *q : p.neighbors)
-        p.delta_pos += (p.lambda + q->lambda) * Spiky_grad((float) (p.pos - q->pos).norm2(), h) * (p.pos - q->pos).unit();
-      p.delta_pos /= params.rest_density / 100;
+        p.delta_pos += (p.lambda + q->lambda) * Spiky_grad(p.pos - q->pos, h);
+      p.delta_pos /= params.rest_density / 2000;
     }
 
     cout << "    delta_pos for p0: " << particles[0].delta_pos << endl;
@@ -99,15 +99,15 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
     // TODO: remove hard coded boundaries
     for (LiquidParticle &p : particles) {
       if (p.pos.y < 0)
-        p.pos = p.prev_pos + 0.5 * (Vector3D(p.pos.x, SURFACE_OFFSET, p.pos.z) - p.prev_pos);
-      if (p.pos.x < -0.5)
-        p.pos = p.prev_pos + 0.5 * (Vector3D(-0.5 + SURFACE_OFFSET, p.pos.y, p.pos.z) - p.prev_pos);
-      if (p.pos.x > 1.5)
-        p.pos = p.prev_pos + 0.5 * (Vector3D(1.5 - SURFACE_OFFSET, p.pos.y, p.pos.z) - p.prev_pos);
-      if (p.pos.z < -0.5)
-        p.pos = p.prev_pos + 0.5 * (Vector3D(p.pos.x, p.pos.y, -0.5 + SURFACE_OFFSET) - p.prev_pos);
-      if (p.pos.z > 1.5)
-        p.pos = p.prev_pos + 0.5 * (Vector3D(p.pos.x, p.pos.y, 1.5 - SURFACE_OFFSET) - p.prev_pos);
+        p.pos = p.prev_pos + 0.7 * (Vector3D(p.pos.x, SURFACE_OFFSET, p.pos.z) - p.prev_pos);
+      if (p.pos.x < -0.2)
+        p.pos = p.prev_pos + 0.7 * (Vector3D(-0.2 + SURFACE_OFFSET, p.pos.y, p.pos.z) - p.prev_pos);
+      if (p.pos.x > 1.2)
+        p.pos = p.prev_pos + 0.7 * (Vector3D(1.2 - SURFACE_OFFSET, p.pos.y, p.pos.z) - p.prev_pos);
+      if (p.pos.z < -0.2)
+        p.pos = p.prev_pos + 0.7 * (Vector3D(p.pos.x, p.pos.y, -0.2 + SURFACE_OFFSET) - p.prev_pos);
+      if (p.pos.z > 1.2)
+        p.pos = p.prev_pos + 0.7 * (Vector3D(p.pos.x, p.pos.y, 1.2 - SURFACE_OFFSET) - p.prev_pos);
     }
 
     cout << "    collision\n";
@@ -168,9 +168,9 @@ float inline Liquid::W(float r_2, float h) {
   return (float) (315 / (64 * PI * pow(h, 9)) * pow(pow(h, 2) - r_2, 3));
 }
 
-float inline Liquid::Spiky_grad(float r_2, float h) {
+Vector3D inline Liquid::Spiky_grad(const Vector3D &r, float h) {
   // assumes r_2 < h * h
-  return (float) (-45 / PI / pow(h, 6) * (h - sqrt(r_2)));
+  return (float) (-45 / PI / pow(h, 6) * pow(h - r.norm(), 2)) * r.unit();
 }
 
 
