@@ -49,7 +49,7 @@ struct LiquidParameters {
   float granularity = 10.0;
   float particle_mass = 1;
   float kernel_radius = 0.2;
-  float rest_density = 350;
+  float rest_density = 600;
   int density_iter = 4;
   float eps = 600;
   float s_corr = 0.0001;

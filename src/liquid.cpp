@@ -57,7 +57,7 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
         }
   }
 
-  cout << "neighbors for p0: " << particles[0].neighbors.size() << endl;
+  cout << "neighbors for middle: " << particles[particles.size() / 2].neighbors.size() << endl;
 
   // calculating density
   for (LiquidParticle &p : particles) {
@@ -66,7 +66,7 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
       p.density += W((float) (p.pos - q->pos).norm2(), h);
   }
 
-  cout << "density for p[0]: " << particles[0].density << endl;
+  cout << "density for middle: " << particles[particles.size() / 2].density << endl;
 
   // solve constraint using Newton's method
   for (int iter = 0; iter < params.density_iter; ++iter) {
@@ -81,33 +81,46 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
       p.lambda = -(p.density / params.rest_density - 1) / (denom + params.eps);
     }
 
-    cout << "    lambda for p0: " << particles[0].lambda << endl;
+    cout << "    lambda for middle: " << particles[particles.size() / 2].lambda << endl;
 
     // calculate delta_pos
     for (LiquidParticle &p : particles) {
       p.delta_pos = {0, 0, 0};
       for (LiquidParticle *q : p.neighbors)
         p.delta_pos += (p.lambda + q->lambda) * Spiky_grad(p.pos - q->pos, h);
-      p.delta_pos /= params.rest_density / 2000;
+      p.delta_pos /= params.rest_density;
+      p.delta_pos *= 2000;
     }
 
-    cout << "    delta_pos for p0: " << particles[0].delta_pos << endl;
+    cout << "    delta_pos for middle: " << particles[particles.size() / 2].delta_pos << endl;
 
-#define SURFACE_OFFSET 0.0001
+    float sum = 0, density;
+    for (LiquidParticle &p : particles) {
+      density = 0;
+      for (LiquidParticle *q : p.neighbors)
+        density += W((float) (p.pos - q->pos).norm2(), h);
+      sum += -(density / params.rest_density - 1);
+    }
+    cout << "    deviation = " << sum << endl;
 
     // collision
     // TODO: remove hard coded boundaries
     for (LiquidParticle &p : particles) {
-      if (p.pos.y < 0)
-        p.pos = p.prev_pos + 0.7 * (Vector3D(p.pos.x, SURFACE_OFFSET, p.pos.z) - p.prev_pos);
-      if (p.pos.x < -0.2)
-        p.pos = p.prev_pos + 0.7 * (Vector3D(-0.2 + SURFACE_OFFSET, p.pos.y, p.pos.z) - p.prev_pos);
-      if (p.pos.x > 1.2)
-        p.pos = p.prev_pos + 0.7 * (Vector3D(1.2 - SURFACE_OFFSET, p.pos.y, p.pos.z) - p.prev_pos);
-      if (p.pos.z < -0.2)
-        p.pos = p.prev_pos + 0.7 * (Vector3D(p.pos.x, p.pos.y, -0.2 + SURFACE_OFFSET) - p.prev_pos);
-      if (p.pos.z > 1.2)
-        p.pos = p.prev_pos + 0.7 * (Vector3D(p.pos.x, p.pos.y, 1.2 - SURFACE_OFFSET) - p.prev_pos);
+      if (p.pos.y <= 0) {
+        p.pos = Vector3D(p.pos.x, 0 - 0.4 * p.vel.y * delta_t, p.pos.z);
+      }
+      if (p.pos.x <= -0.1) {
+        p.pos = {-0.1 - 0.4 * p.vel.x * delta_t, p.pos.y, p.pos.z};
+      }
+      if (p.pos.x >= 1.1) {
+        p.pos = {1.1 - 0.4 * p.vel.x * delta_t, p.pos.y, p.pos.z};
+      }
+      if (p.pos.z <= -0.1) {
+        p.pos = {p.pos.x, p.pos.y, -0.1 - 0.4 * p.vel.z * delta_t};
+      }
+      if (p.pos.z >= 1.1) {
+        p.pos = {p.pos.x, p.pos.y, 1.1 - 0.4 * p.vel.z * delta_t};
+      }
     }
 
     cout << "    collision\n";
@@ -117,7 +130,7 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
       p.pos += p.delta_pos;
   }
 
-  cout << "delta_pos for particle 0: " << particles[0].prev_pos << ' ' << particles[0].pos << ' ' << particles[0].delta_pos << endl;
+  cout << "delta_pos for middle: " << particles[particles.size() / 2].prev_pos << ' ' << particles[particles.size() / 2].pos << ' ' << particles[particles.size() / 2].delta_pos << endl;
 
   // update velocity
   for (LiquidParticle &p : particles) {
@@ -151,26 +164,28 @@ void Liquid::build_spatial_map() {
   }
 }
 
-#define HASH_P1 73856093
-#define HASH_P2 19349663
-#define HASH_P3 83492791
+#define HASH_PRIME 31253
 #define HASH_SIZE 99999989
 
 int Liquid::hash_position(Vector3D pos) {
   int x = (int) std::floor(pos.x / params.kernel_radius);
   int y = (int) std::floor(pos.y / params.kernel_radius);
   int z = (int) std::floor(pos.z / params.kernel_radius);
-  return (x * HASH_P1 ^ y * HASH_P2 ^ z * HASH_P3) % HASH_SIZE;
+  return ((x * HASH_PRIME + y) * HASH_PRIME + z) % HASH_SIZE;
 }
 
 float inline Liquid::W(float r_2, float h) {
   // assumes r_2 < h * h
-  return (float) (315 / (64 * PI * pow(h, 9)) * pow(pow(h, 2) - r_2, 3));
+  return 0 <= r_2 && r_2 <= h * h
+         ? (float) (315 / (64 * PI * pow(h, 9)) * pow(pow(h, 2) - r_2, 3))
+         : 0;
 }
 
 Vector3D inline Liquid::Spiky_grad(const Vector3D &r, float h) {
-  // assumes r_2 < h * h
-  return (float) (-45 / PI / pow(h, 6) * pow(h - r.norm(), 2)) * r.unit();
+  // assumes r * r < h * h
+  return 0 <= r.norm2() && r.norm2() <= h * h
+         ? (float) (-45 / PI / pow(h, 6) * pow(h - r.norm(), 2)) * r.unit()
+         : 0;
 }
 
 
