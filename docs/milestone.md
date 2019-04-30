@@ -1,4 +1,7 @@
 # Milestone Report
+Fanyu Meng, 3032043444, [fy.meng@berkeley.edu]
+Collin Cao, 3032044900, [collincao@berkeley.edu]
+Serena Wu, 3032104700, [serena.wu@berkeley.edu]
 
 ## Status Report
 Our project is focusing on Real-time Position-based Fluid Rendering. In the past week, we are working on implementing the features based on the project 4. The benefit of using project 4 is that the GUI is already very helpful, users can change the gravity, rendering method, and all other parameters in realtime.
@@ -11,5 +14,9 @@ For rendering, we are still currently focusing on the physical model, once the m
 Our plan for this week is to continue improve the speed of the simulation and possibly starting to use CUDA or OpenGL library so we can fully take the advantage of the GPU.
 
 ## Video
+https://youtu.be/QpOzGdEDj6Q
 
 ## Presentation slides
+Please view our presentation slides in below:
+
+https://docs.google.com/presentation/d/1k5XzZktReZ5A07bs4zr9odldY77OLT-SehmmugJpKws/edit?usp=sharing
