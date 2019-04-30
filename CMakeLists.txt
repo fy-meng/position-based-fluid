@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 2.8)
-project(ClothSim)
+project(LiquidSim)
 
 #-------------------------------------------------------------------------------
 # Build options
 #-------------------------------------------------------------------------------
-option(BUILD_LIBCGL    "Build with libCGL"            ON)
-option(BUILD_DEBUG     "Build with debug settings"    ON)
-option(BUILD_DOCS      "Build documentation"          OFF)
+option(BUILD_LIBCGL    "Build with libCGL"                ON)
+option(BUILD_DEBUG     "Build with debug settings"        ON)
+option(BUILD_DOCS      "Build documentation"              OFF)
 
 #-------------------------------------------------------------------------------
 # Platform-specific settings
