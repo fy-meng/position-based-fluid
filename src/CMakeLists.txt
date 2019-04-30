@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
 # Cloth simulation source
-set(CLOTHSIM_VIEWER_SOURCE
+set(LIQUIDSIM_VIEWER_SOURCE
     # Cloth simulation objects
 
     # Collision objects
@@ -10,7 +10,7 @@ set(CLOTHSIM_VIEWER_SOURCE
 
     # Application
     main.cpp
-        Simulator.cpp
+    Simulator.cpp
 
     # Miscellaneous
     # png.cpp
@@ -19,11 +19,12 @@ set(CLOTHSIM_VIEWER_SOURCE
 
     # Camera
     camera.cpp
-        liquid.cpp liquid.h)
+    liquid.cpp
+    liquid.h)
 
 # Windows-only sources
 if(WIN32)
-list(APPEND CLOTHSIM_VIEWER_SOURCE
+list(APPEND LIQUIDSIM_VIEWER_SOURCE
     # For get-opt
     misc/getopt.c
 )
@@ -33,7 +34,7 @@ endif(WIN32)
 # Embed resources
 #-------------------------------------------------------------------------------
 
-# embed_resources(CLOTHSIM_SHADERS
+# embed_resources(LIQUIDSIM_SHADERS
 #   shaders/vert.glsl
 #   shaders/normalFrag.glsl
 #   shaders/wireframeFrag.glsl
@@ -64,7 +65,7 @@ link_directories(
 #-------------------------------------------------------------------------------
 # Add executable
 #-------------------------------------------------------------------------------
-add_executable(liquidsim ${CLOTHSIM_VIEWER_SOURCE})
+add_executable(liquidsim ${LIQUIDSIM_VIEWER_SOURCE})
 
 target_link_libraries(liquidsim
     CGL ${CGL_LIBRARIES}

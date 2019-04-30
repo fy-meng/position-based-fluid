@@ -86,8 +86,11 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
     // calculate delta_pos
     for (LiquidParticle &p : particles) {
       p.delta_pos = {0, 0, 0};
-      for (LiquidParticle *q : p.neighbors)
+      for (LiquidParticle *q : p.neighbors) {
+        float s_corr = -params.k * pow(W((float) (p.pos - q->pos).norm2(), h) / W(params.delta_q, h),
+                                       params.pressure_pow);
         p.delta_pos += (p.lambda + q->lambda) * Spiky_grad(p.pos - q->pos, h);
+      }
       p.delta_pos /= params.rest_density;
       p.delta_pos *= 2000;
     }
