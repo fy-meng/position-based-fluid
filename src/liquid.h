@@ -46,12 +46,12 @@ struct LiquidParameters {
 
   ~LiquidParameters() = default;
 
-  float granularity = 10.0;
+  float granularity = 20.0;
   float particle_mass = 1;
-  float kernel_radius = 0.1;
-  float rest_density = 6378;
+  float kernel_radius = 0.2;
+  float rest_density = 200;
   int density_iter = 4;
-  float eps = 600;
+  float eps = 60;
   float s_corr = 0.0001;
   float delta_q = 0.03;
   int pressure_pow = 4;
@@ -65,14 +65,15 @@ public:
   explicit LiquidParticle(const Vector3D &pos) {
     this->pos = this->prev_pos = pos;
     this->vel = {0, 0, 0};
-    this->m_sphere_mesh = Misc::SphereMesh(4, 4);
+    this->m_sphere_mesh = Misc::SphereMesh(8, 8);
   }
 
   ~LiquidParticle() = default;
 
-  Vector3D pos, prev_pos;
+  Vector3D pos, prev_pos, delta_pos;
   Vector3D vel;
-  float density = 0;
+  float density, lambda;
+  vector<LiquidParticle *> neighbors;
 
   Misc::SphereMesh m_sphere_mesh;
 };
@@ -83,19 +84,27 @@ struct Liquid {
   ~Liquid() = default;
 
   vector<Vector3D> anchors, sizes;
-  vector<float> granularities;
   LiquidParameters params;
 
   vector<LiquidParticle> particles;
 
   void addLiquid(Vector3D anchor, Vector3D size, LiquidParameters params = {});
-
+  void reset();
   void render(GLShader &shader);
 
   void simulate(double frames_per_sec, double simulation_steps,
                 vector<Vector3D> external_accelerations,
                 vector<CollisionObject *> *collision_objects);
-  void reset();
+
+  // spatial hashing
+  unordered_map<int, vector<LiquidParticle *> *> map;
+
+  void build_spatial_map();
+  int hash_position(Vector3D pos);
+
+  // smoothing kernel function
+  static float W(float r_2, float h);
+  static float Spiky_grad(float r_2, float h);
 };
 
 #endif //CLOTHSIM_LIQUID_H
