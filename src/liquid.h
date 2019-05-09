@@ -46,10 +46,10 @@ struct LiquidParameters {
 
   ~LiquidParameters() = default;
 
-  float granularity = 10.0;
+  float granularity = 20.0;
   float particle_mass = 1;
   float kernel_radius = 0.2;
-  float rest_density = 600;
+  float rest_density = 3000;
   int density_iter = 4;
   float eps = 600;
   float k = 0.1;

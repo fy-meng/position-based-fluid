@@ -86,4 +86,4 @@ endif(APPLE)
 set(EXECUTABLE_OUTPUT_PATH ..)
 
 # Install to project root
-install(TARGETS liquidsim DESTINATION ${ClothSim_SOURCE_DIR})
+install(TARGETS liquidsim DESTINATION ${LiquidSim_SOURCE_DIR})

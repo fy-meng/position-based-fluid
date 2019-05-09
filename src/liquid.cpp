@@ -4,6 +4,8 @@
 
 #include "liquid.h"
 
+#define DEBUG_PRINT
+
 using namespace nanogui;
 
 void Liquid::addLiquid(Vector3D anchor, Vector3D size, LiquidParameters params) {
@@ -39,7 +41,9 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
 
   build_spatial_map();
 
+#ifdef DEBUG_PRINT
   cout << "spatial map\n";
+#endif
 
   float h = params.kernel_radius;
 
@@ -57,7 +61,9 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
         }
   }
 
+#ifdef DEBUG_PRINT
   cout << "neighbors for middle: " << particles[particles.size() / 2].neighbors.size() << endl;
+#endif
 
   // calculating density
   for (LiquidParticle &p : particles) {
@@ -66,12 +72,16 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
       p.density += W((float) (p.pos - q->pos).norm2(), h);
   }
 
+#ifdef DEBUG_PRINT
   cout << "density for middle: " << particles[particles.size() / 2].density << endl;
+#endif
 
   // solve constraint using Newton's method
   for (int iter = 0; iter < params.density_iter; ++iter) {
 
+#ifdef DEBUG_PRINT
     cout << "iter = " << iter << endl;
+#endif
 
     // calculate lambda
     for (LiquidParticle &p : particles) {
@@ -81,7 +91,9 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
       p.lambda = -(p.density / params.rest_density - 1) / (denom + params.eps);
     }
 
+#ifdef DEBUG_PRINT
     cout << "    lambda for middle: " << particles[particles.size() / 2].lambda << endl;
+#endif
 
     // calculate delta_pos
     for (LiquidParticle &p : particles) {
@@ -92,10 +104,12 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
         p.delta_pos += (p.lambda + q->lambda) * Spiky_grad(p.pos - q->pos, h);
       }
       p.delta_pos /= params.rest_density;
-      p.delta_pos *= 2000;
+      p.delta_pos *= 3000;
     }
 
+#ifdef DEBUG_PRINT
     cout << "    delta_pos for middle: " << particles[particles.size() / 2].delta_pos << endl;
+#endif
 
     float sum = 0, density;
     for (LiquidParticle &p : particles) {
@@ -104,36 +118,65 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
         density += W((float) (p.pos - q->pos).norm2(), h);
       sum += -(density / params.rest_density - 1);
     }
+
+#ifdef DEBUG_PRINT
     cout << "    deviation = " << sum << endl;
+#endif
+
+#define VEL_EPS 0.015
+#define COLLISION_EPS 0.02
 
     // collision
     // TODO: remove hard coded boundaries
     for (LiquidParticle &p : particles) {
-      if (p.pos.y <= 0) {
-        p.pos = Vector3D(p.pos.x, 0 - 0.4 * p.vel.y * delta_t, p.pos.z);
+      if (p.pos.y <= 0.0) {
+        if (abs(p.vel.y) > VEL_EPS)
+          p.pos.y = 0.0 + 0.3 * (0.0 - p.pos.y);
+        else
+          p.pos.y = 0.0 + 0.05;
       }
-      if (p.pos.x <= -0.1) {
-        p.pos = {-0.1 - 0.4 * p.vel.x * delta_t, p.pos.y, p.pos.z};
+
+      if (p.pos.x <= -0.1)  {
+        if (abs(p.vel.x) > VEL_EPS)
+          p.pos.x = -0.1 + 0.3 * (-0.1 - p.pos.x);
+        else
+          p.pos.x = -0.1 + COLLISION_EPS;
       }
+
       if (p.pos.x >= 1.1) {
-        p.pos = {1.1 - 0.4 * p.vel.x * delta_t, p.pos.y, p.pos.z};
+        if (abs(p.vel.x) > VEL_EPS)
+          p.pos.x = 1.1 + 0.3 * (1.1 - p.pos.x);
+        else
+          p.pos.x = 1.1 - COLLISION_EPS;
       }
+
       if (p.pos.z <= -0.1) {
-        p.pos = {p.pos.x, p.pos.y, -0.1 - 0.4 * p.vel.z * delta_t};
+        if (abs(p.vel.z) > VEL_EPS)
+          p.pos.z = -0.1 + 0.3 * (-0.1 - p.pos.z);
+        else
+          p.pos.z = -0.1 + COLLISION_EPS;
       }
+
       if (p.pos.z >= 1.1) {
-        p.pos = {p.pos.x, p.pos.y, 1.1 - 0.4 * p.vel.z * delta_t};
+        if (abs(p.vel.z) > VEL_EPS)
+          p.pos.z = 1.1 + 0.3 * (1.1 - p.pos.z);
+        else
+          p.pos.z = 1.1 + COLLISION_EPS;
       }
     }
 
+#ifdef DEBUG_PRINT
     cout << "    collision\n";
+#endif
 
     // update position
     for (LiquidParticle &p : particles)
       p.pos += p.delta_pos;
   }
 
+#ifdef DEBUG_PRINT
   cout << "delta_pos for middle: " << particles[particles.size() / 2].prev_pos << ' ' << particles[particles.size() / 2].pos << ' ' << particles[particles.size() / 2].delta_pos << endl;
+#endif
 
   // update velocity
   for (LiquidParticle &p : particles) {
