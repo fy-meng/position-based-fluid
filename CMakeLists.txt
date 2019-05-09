@@ -214,4 +214,4 @@ if(BUILD_DOCS)
 endif()
 
 # Install settings
-set(CMAKE_INSTALL_PREFIX "${ClothSim_SOURCE_DIR}/")
+set(CMAKE_INSTALL_PREFIX "${LiquidSim_SOURCE_DIR}/")
