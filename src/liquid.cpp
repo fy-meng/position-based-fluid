@@ -137,6 +137,7 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
       LiquidParticle *p = particles[i];
       p->delta_pos = {0, 0, 0};
       for (LiquidParticle *q : p->neighbors) {
+        // tensile instability
         float s_corr = -params.k * pow(W((float) (p->pos - q->pos).norm2(), h) / W(params.delta_q, h),
                                        params.pressure_pow);
         p->delta_pos += (p->lambda + q->lambda) * Spiky_grad(p->pos - q->pos, h);
@@ -175,6 +176,9 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
   for (int i = 0; i < num_particles; ++i) {
     LiquidParticle *p = particles[i];
     p->vel = 0.99 * (p->pos - p->prev_pos) / delta_t;
+    // viscosity
+//    for (LiquidParticle *q : p->neighbors)
+//      p->vel += params.viscosity * (q->vel - p->vel) * W((float) (p->pos - q->pos).norm2(), h);
     p->prev_pos = p->pos;
   }
 
