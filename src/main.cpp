@@ -244,7 +244,6 @@ bool loadObjectsFromFile(string filename, Liquid *liquid, vector<CollisionObject
       objects->push_back(p);
     } else if (key == LIQUIDS) {
       Vector3D anchor, size;
-      double granularity;
 
       for (auto it_liquid : object) {
         auto it_size = it_liquid.find("size");

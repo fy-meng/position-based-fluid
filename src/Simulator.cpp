@@ -205,9 +205,8 @@ void Simulator::init() {
   Vector3D avg_pm_position(0, 0, 0);
   double max_liquid_side = 0;
 
-  for (LiquidParticle &p : liquid->particles) {
-    avg_pm_position += p.pos / liquid->particles.size();
-  }
+  for (int i = 0; i < liquid->num_particles; ++i)
+    avg_pm_position += liquid->particles[i]->pos / liquid->num_particles;
 
   for (Vector3D &size : liquid->sizes)
   {

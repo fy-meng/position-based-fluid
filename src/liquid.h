@@ -46,10 +46,10 @@ struct LiquidParameters {
 
   ~LiquidParameters() = default;
 
-  float granularity = 20.0;
+  float granularity = 10.0;
   float particle_mass = 1;
   float kernel_radius = 0.2;
-  float rest_density = 3000;
+  float rest_density = 800;
   int density_iter = 4;
   float eps = 600;
   float k = 0.1;
@@ -72,7 +72,7 @@ public:
 
   Vector3D pos, prev_pos, delta_pos;
   Vector3D vel;
-  float density, lambda;
+  float density = 0, lambda = 0;
   vector<LiquidParticle *> neighbors;
 
   Misc::SphereMesh m_sphere_mesh;
@@ -86,7 +86,8 @@ struct Liquid {
   vector<Vector3D> anchors, sizes;
   LiquidParameters params;
 
-  vector<LiquidParticle> particles;
+  size_t num_particles = 0;
+  LiquidParticle **particles = NULL;
 
   void addLiquid(Vector3D anchor, Vector3D size, LiquidParameters params = {});
   void reset();
