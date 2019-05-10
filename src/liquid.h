@@ -52,7 +52,7 @@ struct LiquidParameters {
   float rest_density = 800;
   int density_iter = 4;
   float eps = 600;
-  float k = 0.1;
+  float k = 0.0001;
   float delta_q = 0.03;
   int pressure_pow = 4;
   float viscosity = 0.01;
