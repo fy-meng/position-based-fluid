@@ -134,8 +134,7 @@ limited except for on Linux.
 *A column of water dropping into the corner of a container (Click on image for video).*
 
 
-[![milk-crown](images/milk-crown.png)](http://www.youtube.com/watch?v=qldNTIJoDpU "milk-crown")
-
+<iframe width="560" height="315" src="https://www.youtube.com/embed/qldNTIJoDpU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 *An attempt to simulate the "milk crown" effect (Click on image for video).*
 
 [![no-gravity](images/no-gravity.png)](http://www.youtube.com/watch?v=RMlg79PKRzA "no-gravity")
