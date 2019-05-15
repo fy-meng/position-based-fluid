@@ -38,23 +38,23 @@ The constraints are solved using a iterative density solver, trying to
 change the position of each particle so that all particles are close to 
 their rest density. The isotropic kernel function is defined as 
 
-\\[  W(\mathbf{r}, h) = {315 \over 64 \pi h^9} (h^2 - \lvert \mathbf{r} \rvert^2)^3 \\]
+{% raw %} $$  W(\mathbf{r}, h) = {315 \over 64 \pi h^9} (h^2 - \lvert \mathbf{r} \rvert^2)^3 $$ {% endraw %}
 
 and we used the "spiky" kernel as its gradient to avoid vanishing 
 gradient near zero. "Spiky" is defined as:
 
-\\[ \nabla \mathbf{W}(\mathbf{r}, h) = -{45 \over \pi h^6} (h - \lvert \mathbf{r} \rvert)^2 \hat{\mathbf{r}} \\]
+{% raw %} $$ \nabla \mathbf{W}(\mathbf{r}, h) = -{45 \over \pi h^6} (h - \lvert \mathbf{r} \rvert)^2 \hat{\mathbf{r}} $$ {% endraw %}
 
 For each particle, we have \\( \rho_0 \\) as its rest density, and its 
 current density is estimated using the SPH estimator:
 
-\\[ \rho_i = \sum_{j \in N_i} m_j W(\mathbf{p}_i - \mathbf{p}_j, h) \\]
+{% raw %} $$ \rho_i = \sum_{j \in N_i} m_j W(\mathbf{p}_i - \mathbf{p}_j, h) $$ {% endraw %}
 
 where \\( N_i \\) is the neighbor set of particle \\( i \\). 
 
 The incompressible constraint is modeled as 
 
-\\[ C_i = {\rho_i \over \rho_0} - 1 \\]
+{% raw %} $$ C_i = {\rho_i \over \rho_0} - 1 $$ {% endraw %}
 
 Note that in our model, all particles have the same mass, the all of the 
 calculating involving \\( m_i \\) can be omitted.
@@ -62,15 +62,15 @@ calculating involving \\( m_i \\) can be omitted.
 We want to search for a displacement vector \\( \Delta \mathbf{p}_i \\)
 so that 
 
-\\[ C_i (\mathbf{p} + \Delta \mathbf{p}) = 0, \forall i \\]
+{% raw %} $$ C_i (\mathbf{p}_i + \Delta \mathbf{p}_i) = 0, \forall i $$ {% endraw %}
 
 This is solved using Newton's method:
 
-\\[ \Delta \mathbf{p}_i = {1 \over \rho_0} \sum_{j \in N_i} (\lambda_i + \lambda_j) \nabla \mathbf{W}(\mathbf{p_i} - \mathbf{p_j}, h) \\]
+{% raw %} $$ \Delta \mathbf{p}_i = {1 \over \rho_0} \sum_{j \in N_i} (\lambda_i + \lambda_j) \nabla \mathbf{W}(\mathbf{p_i} - \mathbf{p_j}, h) $$ {% endraw %}
 
 where
 
-\\[ \lambda_i = - {C_i \over \sum_k \lvert \nabla_{\mathbf{p}_k}} C_i \rvert + \varepsilon \\]
+{% raw %} $$ \lambda_i = - {C_i \over \sum_k \lvert \nabla_{\mathbf{p}_k} C_i \rvert + \varepsilon} $$ {% endraw %}
 
 in which \\( \varepsilon \\) is an artificial term added for stability.
 
@@ -78,11 +78,11 @@ in which \\( \varepsilon \\) is an artificial term added for stability.
 
 We introduce an artificial pressure as
 
-\\[ s_\mathrm{corr} = -k \left( W(\mathbf{p}_i - \mathbf{p}_j, h) \over W(\nabla \mathbf{q}, h) \right)^n \\] 
+{% raw %} $$ s_\mathrm{corr} = -k \left( W(\mathbf{p}_i - \mathbf{p}_j, h) \over W(\nabla \mathbf{q}, h) \right)^n $$ {% endraw %} 
 
 and change the displacement calculation in the previous section into
 
-\\[ \Delta \mathbf{p}_i = {1 \over \rho_0} \sum_{j \in N_i} (\lambda_i + \lambda_j + s_\mathrm{corr}) \nabla \mathbf{W}(\mathbf{p_i} - \mathbf{p_j}, h) \\] 
+{% raw %} $$ \Delta \mathbf{p}_i = {1 \over \rho_0} \sum_{j \in N_i} (\lambda_i + \lambda_j + s_\mathrm{corr}) \nabla \mathbf{W}(\mathbf{p_i} - \mathbf{p_j}, h) $$ {% endraw %} 
 
 This improves the cramming problem that will be discussed in the 
 following sections by a little bit
@@ -91,7 +91,7 @@ following sections by a little bit
 
 After the velocity update, we apply XPH viscosity by updating
 
-\\[ \mathbf{v}_i^* = \mathbf{v}_i + c \sum_{j \in N_i} (\mathbf{v}_j - \mathbf{v}_i) \cdot W(\mathbf{p}_i - \mathbf{p}_j, j) \\]
+{% raw %} $$ \mathbf{v}_i^* = \mathbf{v}_i + c \sum_{j \in N_i} (\mathbf{v}_j - \mathbf{v}_i) \cdot W(\mathbf{p}_i - \mathbf{p}_j, j) $$ {% endraw %}
 
 ### Particles Cramming
 
