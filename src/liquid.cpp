@@ -14,7 +14,7 @@ void Liquid::addLiquid(Vector3D anchor, Vector3D size, LiquidParameters params) 
   this->sizes.push_back(size);
   this->params = params;
 
-  int t = num_particles;
+  size_t t = num_particles;
   num_particles += (size_t) (size.x * size.y * size.z * pow(params.granularity, 3));
 
   if (!particles)
@@ -22,10 +22,16 @@ void Liquid::addLiquid(Vector3D anchor, Vector3D size, LiquidParameters params) 
   else
     particles = (LiquidParticle **) realloc(particles, num_particles  * sizeof(LiquidParticle *));
 
+  int x_num = (int) (size.x * params.granularity);
+  int y_num = (int) (size.y * params.granularity);
+  int z_num = (int) (size.z * params.granularity);
+
+  #pragma omp parallel for num_threads(16)
   for (int i = 0; i < size.x * params.granularity; ++i)
     for (int j = 0; j < size.y * params.granularity; ++j)
       for (int k = 0; k < size.z * params.granularity; ++k)
-        this->particles[t++] = new LiquidParticle(anchor + (Vector3D(i, j, k) + 0.5) / params.granularity);
+        this->particles[t + (i * y_num + j) * z_num + k] =
+                new LiquidParticle(anchor + (Vector3D(i, j, k) + 0.5) / params.granularity);
 }
 
 void Liquid::render(GLShader &shader) {
@@ -43,7 +49,7 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
     externAcc += a;
 
   // apply external forces
-  #pragma omp parallel for
+  #pragma omp parallel for num_threads(16)
   for (int i = 0; i < num_particles; ++i) {
     LiquidParticle *p = particles[i];
     p->vel += externAcc * delta_t;
@@ -78,7 +84,7 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
   #endif
 
   // calculating density
-#pragma omp parallel for
+  #pragma omp parallel for
   for (int i = 0; i < num_particles; ++i) {
     LiquidParticle *p = particles[i];
     p->density = 0;
@@ -99,24 +105,19 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
 
     // collision
     // TODO: remove hard coded boundaries
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < num_particles; ++i) {
       LiquidParticle *p = particles[i];
-      if (p->pos.y <= 0) {
-        p->pos = Vector3D(p->pos.x, 0 - 0.5 * p->vel.y * delta_t, p->pos.z);
-      }
-      if (p->pos.x <= -0.1) {
-        p->pos = {-0.1 - 0.5 * p->vel.x * delta_t, p->pos.y, p->pos.z};
-      }
-      if (p->pos.x >= 1.1) {
-        p->pos = {1.1 - 0.5 * p->vel.x * delta_t, p->pos.y, p->pos.z};
-      }
-      if (p->pos.z <= -0.1) {
-        p->pos = {p->pos.x, p->pos.y, -0.1 - 0.5 * p->vel.z * delta_t};
-      }
-      if (p->pos.z >= 1.1) {
-        p->pos = {p->pos.x, p->pos.y, 1.1 - 0.5 * p->vel.z * delta_t};
-      }
+      if (p->pos.y <= 0)
+        p->pos.y = 0 - 0.5 * p->vel.y * delta_t;
+      if (p->pos.x <= -0.1)
+        p->pos.x = -0.1 - 0.5 * p->vel.x * delta_t;
+      if (p->pos.x >= 1.1)
+        p->pos.x = 1.1 - 0.5 * p->vel.x * delta_t;
+      if (p->pos.z <= -0.1)
+        p->pos.z = -0.1 - 0.5 * p->vel.z * delta_t;
+      if (p->pos.z >= 1.1)
+        p->pos.z = 1.1 - 0.5 * p->vel.z * delta_t;
     }
 
 #ifdef DEBUG_PRINT
@@ -124,7 +125,7 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
 #endif
 
     // calculate lambda
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < num_particles; ++i) {
       LiquidParticle *p = particles[i];
       float denom = 0;
@@ -138,7 +139,7 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
 #endif
 
     // calculate delta_pos
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < num_particles; ++i) {
       LiquidParticle *p = particles[i];
       p->delta_pos = {0, 0, 0};
@@ -157,13 +158,13 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
 #endif
 
     float sum = 0, density;
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < num_particles; ++i) {
       LiquidParticle *p = particles[i];
       density = 0;
       for (LiquidParticle *q : p->neighbors)
         density += W((float) (p->pos - q->pos).norm2(), h);
-#pragma omp critical
+      #pragma omp critical
       sum += -(density / params.rest_density - 1);
     }
 
@@ -172,7 +173,7 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
 #endif
 
     // update position
-#pragma omp parallel for
+    #pragma omp parallel for
     for (int i = 0; i < num_particles; ++i)
       particles[i]->pos += particles[i]->delta_pos;
   }
@@ -182,7 +183,7 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
 #endif
 
   // update velocity
-#pragma omp parallel for
+  #pragma omp parallel for
   for (int i = 0; i < num_particles; ++i) {
     LiquidParticle *p = particles[i];
     p->vel = 0.99 * (p->pos - p->prev_pos) / delta_t;
@@ -193,10 +194,10 @@ void Liquid::simulate(double frames_per_sec, double simulation_steps,
   }
 
 #define VEL_EPS 0.1
-#define COLLISION_EPS 0.005
+#define COLLISION_EPS 0.01
 
   // additional collision to address vanishing momentum
-#pragma omp parallel for
+//#pragma omp parallel for
   for (int i = 0; i < num_particles; ++i) {
     LiquidParticle *p = particles[i];
 

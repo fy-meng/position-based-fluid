@@ -1,5 +1,8 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.13)
 project(LiquidSim)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)  # not necessary, but encouraged
 
 #-------------------------------------------------------------------------------
 # Build options
@@ -25,6 +28,23 @@ if(APPLE)
     find_library (COREVIDEO_LIBRARIES CoreVideo)
   endif()
 
+  # GCC configuration
+  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+
+      set(GCC_CXX_FLAGS "-std=gnu++11 -m64")
+
+      if(BUILD_DEBUG)
+          set(CMAKE_BUILD_TYPE Debug)
+          set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -g")
+      else(BUILD_DEBUG)
+          set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -O3")
+          set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -fopenmp")
+      endif(BUILD_DEBUG)
+
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CXX_FLAGS}")
+
+  endif()
+
   # Clang configuration
   if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 
@@ -41,23 +61,6 @@ if(APPLE)
     endif(BUILD_DEBUG)
 
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CLANG_CXX_FLAGS}")
-
-  endif()
-
-  # GCC configuration
-  if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-
-    set(GCC_CXX_FLAGS "-std=gnu++11 -m64")
-
-    if(BUILD_DEBUG)
-      set(CMAKE_BUILD_TYPE Debug)
-      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -g")
-    else(BUILD_DEBUG)
-      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -O3")
-      set(GCC_CXX_FLAGS "${GCC_CXX_FLAGS} -fopenmp")
-    endif(BUILD_DEBUG)
-
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GCC_CXX_FLAGS}")
 
   endif()
 
@@ -200,11 +203,14 @@ else(BUILD_LIBCGL)
   find_package(CGL REQUIRED)
 endif(BUILD_LIBCGL)
 
-find_package(OpenMP)
-if (OPENMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+find_package(OpenMP REQUIRED)
+if(NOT TARGET OpenMP::OpenMP_CXX)
+    add_library(OpenMP_TARGET INTERFACE)
+    add_library(OpenMP::OpenMP_CXX ALIAS OpenMP_TARGET)
+    target_compile_options(OpenMP_TARGET INTERFACE ${OpenMP_CXX_FLAGS})
+    find_package(Threads REQUIRED)
+    target_link_libraries(OpenMP_TARGET INTERFACE Threads::Threads)
+    target_link_libraries(OpenMP_TARGET INTERFACE ${OpenMP_CXX_FLAGS})
 endif()
 
 #-------------------------------------------------------------------------------
