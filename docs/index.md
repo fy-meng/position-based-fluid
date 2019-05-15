@@ -126,19 +126,19 @@ limited except for on Linux.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/JK9sFxi8GBg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-*A cube of liquid dropping into a slight larger container (Click on image for video).*
+*A cube of liquid dropping into a slight larger container.*
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/flSLvjlFkWE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-*A column of water dropping into the corner of a container (Click on image for video).*
+*A column of water dropping into the corner of a container.*
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/qldNTIJoDpU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-*An attempt to simulate the "milk crown" effect (Click on image for video).*
+*An attempt to simulate the "milk crown" effect.*
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/RMlg79PKRzA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-*Water particles without gravity (Click on image for video).*
+*Water particles without gravity.*
 
 ## Future Works
 
