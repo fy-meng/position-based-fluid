@@ -38,9 +38,57 @@ The constraints are solved using a iterative density solver, trying to
 change the position of each particle so that all particles are close to 
 their rest density. The isotropic kernel function is defined as 
 
-\\[  W(r, h) = {315 \over 64 \pi h^9} (h^2 - \lvert r \rvert^2)^3 \\]
+\\[  W(\mathbf{r}, h) = {315 \over 64 \pi h^9} (h^2 - \lvert \mathbf{r} \rvert^2)^3 \\]
 
-and its gradient is 
+and we used the "spiky" kernel as its gradient to avoid vanishing 
+gradient near zero. "Spiky" is defined as:
+
+\\[ \nabla \mathbf{W}(\mathbf{r}, h) = -{45 \over \pi h^6} (h - \lvert \mathbf{r} \rvert)^2 \hat \mathbf{r} \\]
+
+For each particle, we have \\( \rho_0 \\) as its rest density, and its 
+current density is estimated using the SPH estimator:
+
+\\[ \rho_i = \sum_{j \in N_i} m_j W(\mathbf{p}_i - \mathbf{p}_j, h) \\]
+
+where \\( N_i \\) is the neighbor set of particle \\( i \\). 
+
+The incompressible constraint is modeled as 
+
+\\[ C_i = {\rho_i \over \rho_0} - 1 \\]
+
+and we want to search for a displacement vector \\( \delta \mathbf{p}_i \\)
+so that 
+
+\\[ C_i (\mathbf{p} + \delta \mathbf{p}) = 0, \forall i \\]
+
+This is solved using Newton's method:
+
+\\[ \delta \mathbf{p}_i = {1 \over \rho_0} \sum_{j \in N_i} (\lambda_i + \lambda_j) \nabla \mathbf{W}(\mathbf{p_i} - \mathbf{p_j}, h) \\]
+
+where
+
+\\[ \lambda_i = - {C_i \over \sum_k \lvert \nabla_{\mathbf{p}_k}} C_i \rvert + \varepsilon \\]
+
+in which \\( \varepsilon \\) is an artificial term added for stability.
+
+### Tensile Instability
+
+We introduce an artificial pressure as
+
+\\[ s_\mathrm{corr} = -k \left( W(\mathbf{p}_i - \mathbf{p}_j, h) \over W(\nabla \mathbf{q}, h) \right)^n \\] 
+
+and change the displacement calculation in the previous section into
+
+\\[ \delta \mathbf{p}_i = {1 \over \rho_0} \sum_{j \in N_i} (\lambda_i + \lambda_j + s_\mathrm{corr}) \nabla \mathbf{W}(\mathbf{p_i} - \mathbf{p_j}, h) \\] 
+
+This improves the cramming problem that will be discussed in the 
+following sections by a little bit
+
+### XPH Viscosity
+
+After the velocity update, we apply XPH viscosity by updating
+
+\\[ \mathbf{v}_i^* = \mathbf{v}_i + c \sum_{j \in N_i} (\mathbf{v}_j - \mathbf{v}_i) \cdot W(\mathbf{p}_i - \mathbf{p}_j, j) \\]
 
 ### Particles Cramming
 
