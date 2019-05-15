@@ -167,9 +167,6 @@ Transactions on Graphics (TOG) 32.4 (2013): 104.
 
 ## Contributions
 
-- Fanyu Meng: Port the skeleton from skeleton code and implemented the 
-simulate loop and the physics system. 
-- Collin Cao: Enabled OpenMP to speed up the simulation. Helped with the 
-    idea of velocity-based collision and parameter tuning. 
-- Serena Wu:Enabled OpenMP to speed up the simulation. Helped with the 
-    idea of velocity-based collision and parameter tuning. 
+- Fanyu Meng: Fully understand the project 4 code and port the skeleton code to curretn project. Also implemented the simulate loop and the main physics system. 
+- Collin Cao: System compatability(compile in Linux/MacOS/Windows), Enabled OpenMP and algorithm/logic improvement of code to speed up(4-8x) the simulation.
+- Serena Wu: Implementing velocity-based collision, physical constrains, scene/artistic design and parameter tuning for more realistic simulation. 
