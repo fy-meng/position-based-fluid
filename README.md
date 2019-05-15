@@ -56,7 +56,9 @@ solution is to use a velocity-based collision, and each surface will
 reflect a colliding particle back corresponding to its previous velocity 
 instead of position. 
 
-[![cramming](docs/images/cramming.png)](http://www.yout3be.com/watch?v=Fzw8ruSU1_g "cramming")
+[![cramming](docs/images/cramming.png)](http://www.youtube.com/watch?v=Fzw8ruSU1_g "cramming")
+
+*Particles cramming due to a loss of momentum.*
 
 Additionally, since we did not implement vorticity constraints, the 
 particles suffer from momentum loosing and sticking to the collision 
@@ -73,17 +75,21 @@ limited except for on Linux.
 ## Results
 
 [![liquid](docs/images/liquid.png)](http://www.youtube.com/watch?v=JK9sFxi8GBg "liquid")
+
 *A cube of liquid dropping into a slight larger container.*
 
 
 [![tap](docs/images/tap.png)](http://www.youtube.com/watch?v=flSLvjlFkWE "tap")
+
 *A column of water dropping into the corner of a container.*
 
 
 [![milk-crown](docs/images/milk-crown.png)](http://www.youtube.com/watch?v=qldNTIJoDpU "milk-crown")
+
 *An attempt to simulate the "milk crown" effect.*
 
 [![no-gravity](docs/images/no-gravity.png)](http://www.youtube.com/watch?v=RMlg79PKRzA "no-gravity")
+
 *Water particles without gravity.*
 
 ## Future Works
