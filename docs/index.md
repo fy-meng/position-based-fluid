@@ -106,9 +106,9 @@ solution is to use a velocity-based collision, and each surface will
 reflect a colliding particle back corresponding to its previous velocity 
 instead of position. 
 
-[![cramming](images/cramming.png)](http://www.youtube.com/watch?v=Fzw8ruSU1_g "cramming")
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Fzw8ruSU1_g" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-*Particles cramming due to a loss of momentum (Click on image for video).*
+*Particles cramming due to a loss of momentum.*
 
 Additionally, since we did not implement vorticity constraints, the 
 particles suffer from momentum loosing and sticking to the collision 
@@ -124,20 +124,19 @@ limited except for on Linux.
 
 ## Results
 
-[![liquid](images/liquid.png)](http://www.youtube.com/watch?v=JK9sFxi8GBg "liquid")
+<iframe width="560" height="315" src="https://www.youtube.com/embed/JK9sFxi8GBg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 *A cube of liquid dropping into a slight larger container (Click on image for video).*
 
-
-[![tap](images/tap.png)](http://www.youtube.com/watch?v=flSLvjlFkWE "tap")
+<iframe width="560" height="315" src="https://www.youtube.com/embed/flSLvjlFkWE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 *A column of water dropping into the corner of a container (Click on image for video).*
 
-
 <iframe width="560" height="315" src="https://www.youtube.com/embed/qldNTIJoDpU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 *An attempt to simulate the "milk crown" effect (Click on image for video).*
 
-[![no-gravity](images/no-gravity.png)](http://www.youtube.com/watch?v=RMlg79PKRzA "no-gravity")
+<iframe width="560" height="315" src="https://www.youtube.com/embed/RMlg79PKRzA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 *Water particles without gravity (Click on image for video).*
 
