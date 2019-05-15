@@ -16,7 +16,7 @@ Fluids* \[1\] as follows:
 
 ![](images/algs-simulation-loop.png)
 
-test equation: \$$ \sum_{i=1}^n e^x \mathrm{d}x $$
+test equation: \\( \sum_{i=1}^n e^x \mathrm{d}x \\)
 
 The original paper contains incompressibility, tensile instability, 
 vorticity confinement and viscosity constraints. Due to time limitation, 
@@ -36,7 +36,7 @@ The constraints are solved using a iterative density solver, trying to
 change the position of each particle so that all particles are close to 
 their rest density.
 
-### 
+### Particles Cramming
 
 The biggest obstacle during our implementation is the problem of 
 particles cramming and loosing momentum after collision. Our original 

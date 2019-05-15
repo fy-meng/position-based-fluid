@@ -1,3 +1,6 @@
+markdown: kramdown
+mathjax: true
+layout: default
 plugins:
   - jekyll-relative-links
 relative_links:
