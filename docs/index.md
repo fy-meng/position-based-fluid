@@ -18,9 +18,7 @@ The code is modified from
 The algorithm is mostly based on Macklin and Muller's *Position Based 
 Fluids* \[1\] as follows:
 
-![](images/algs-simulation-loop.png)
-
-test equation: \\( \sum_{i=1}^n e^x \mathrm{d}x \\)
+<img src="images/algs-simulation-loop.png" width="60%"/>
 
 The original paper contains incompressibility, tensile instability, 
 vorticity confinement and viscosity constraints. Due to time limitation, 
@@ -38,7 +36,11 @@ centered by corresponding block of the input position.
 
 The constraints are solved using a iterative density solver, trying to 
 change the position of each particle so that all particles are close to 
-their rest density.
+their rest density. The isotropic kernel function is defined as 
+
+\\[  W(r, h) = {315 \over 64 \pi h^9} (h^2 - \lvert r \rvert^2)^3 \\]
+
+and its gradient is 
 
 ### Particles Cramming
 
@@ -113,3 +115,10 @@ possibly get a fast well-performing solver.
 Transactions on Graphics (TOG) 32.4 (2013): 104.
 
 ## Contributions
+
+- Fanyu Meng: Port the skeleton from skeleton code and implemented the 
+simulate loop and the physics system. 
+- Collin Cao: Enabled OpenMP to speed up the simulation. Helped with the 
+    idea of velocity-based collision and parameter tuning. 
+- Serena Wu:Enabled OpenMP to speed up the simulation. Helped with the 
+    idea of velocity-based collision and parameter tuning. 
