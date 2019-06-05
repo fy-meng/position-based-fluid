@@ -11,4 +11,4 @@ Project for Berkeley CS 184: Computer Graphics and Imaging, Spring 2019
 
 ## Final Report
 
-[Final Report](docs/index.md)
+[Final Report](https://fy-meng.github.io/position-based-fluid/)
